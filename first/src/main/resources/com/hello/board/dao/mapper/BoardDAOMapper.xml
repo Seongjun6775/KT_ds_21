@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Board">
+
+	<insert id="createNewBoard"
+			parameterType="com.hello.board.vo.BoardVO">
+		<selectKey keyProperty="id" resultType="_int" order="BEFORE">
+			SELECT SEQ_BOARD_PK.NEXTVAL
+			  FROM DUAL
+		</selectKey>
+		INSERT INTO BOARD.BOARD
+			 ( ID
+			 , SUBJECT
+			 , CONTENT
+			 , EMAIL
+			 , CRT_DT
+			 , MDFY_DT)
+	   VALUES
+	   		 ( #{id}
+	   		 , #{subject}
+	   		 , #{content}
+	   		 , #{email}
+	   		 , SYSDATE
+	   		 , SYSDATE)
+	</insert>
+
+	<resultMap id="BoardMap" type="com.hello.board.vo.BoardVO" autoMapping="true">
+
+		<id property="id" column="ID" />
+		<association property="memberVO" 
+					 javaType="com.hello.member.vo.MemberVO" autoMapping="true">
+				<id property="email" column="EMAIL" />
+		</association>
+		<collection property="replyList" 
+					ofType="com.hello.reply.vo.ReplyVO" 
+					autoMapping="true">
+				<id property="replyId" column="REPLY_ID"/>
+				<result property="email" column="R_EMAIL" /> 
+				<result property="boardId" column="TOPIC_ID" />
+				<result property="crtDt" column="R_CRT_DT" />
+				<result property="mdfyDt" column="R_MDFY_DT" />
+				<association property="memberVO" javaType="com.hello.member.vo.MemberVO" autoMapping="true">
+					<id property="email" column="R_EMAIL" />
+					<result property="name" column="R_NAME" />
+				</association>
+		</collection>
+		<collection property="attachFileList"
+					ofType="com.hello.attachfile.vo.AttachFileVO"
+					autoMapping="true">
+			<id property="fileId" column="FILE_ID"/>
+			<result property="boardId" column="AF_TOPIC_ID"/>
+		</collection>
+	</resultMap>
+
+	<select id="readAllBoard"
+			resultMap="BoardMap">
+		SELECT B.ID
+			 , B.SUBJECT
+			 , B.EMAIL
+			 , B.CONTENT
+			 , TO_CHAR(B.CRT_DT, 'YYYY-MM-DD HH24:MI:SS') CRT_DT
+			 , TO_CHAR(B.MDFY_DT, 'YYYY-MM-DD HH24:MI:SS') MDFY_DT
+			 , M.NAME
+			 , R.REPLY_ID
+			 , R.TOPIC_ID
+			 , R.REPLY
+			 , R.EMAIL R_EMAIL
+			 , R.CRT_DT R_CRT_DT
+			 , R.MDFY_DT R_MDFY_DT
+			 , R.PRNT_REPLY_ID
+			 , RM.NAME R_NAME
+		  FROM BOARD B
+		 INNER JOIN MEMBERS M
+		 	ON B.EMAIL = M.EMAIL
+		  LEFT OUTER JOIN REPLIES R
+		  	ON B.ID = R.TOPIC_ID
+		  LEFT OUTER JOIN MEMBERS RM
+		  	ON R.EMAIL = RM.EMAIL
+		 ORDER BY B.MDFY_DT DESC
+	</select>
+
+	<select id="readOneBoardByBoardId"
+			parameterType="_int"
+			resultMap="BoardMap">
+		SELECT LEVEL - 1 DEPTH 
+			 , B.ID
+		     , B.SUBJECT
+		     , B.CONTENT
+		     , B.EMAIL
+			 , TO_CHAR(B.CRT_DT, 'YYYY-MM-DD HH24:MI:SS') CRT_DT
+			 , TO_CHAR(B.MDFY_DT, 'YYYY-MM-DD HH24:MI:SS') MDFY_DT
+		     , M.NAME
+		     , R.REPLY_ID
+		 	 , R.TOPIC_ID
+		 	 , R.REPLY
+		 	 , R.EMAIL R_EMAIL
+		 	 , R.CRT_DT R_CRT_DT
+		 	 , R.MDFY_DT R_MDFY_DT
+		 	 , R.PRNT_REPLY_ID
+		 	 , RM.NAME R_NAME
+		 	 , AF.FILE_ID
+			 , AF.TOPIC_ID AF_TOPIC_ID
+			 , AF.ORIGIN_FILE_NAME
+			 , AF.UUID_FILE_NAME
+			 , AF.FILE_SIZE
+			 , AF.FILE_EXT
+		  FROM BOARD B
+		 INNER JOIN MEMBERS M
+		 	ON B.EMAIL = M.EMAIL
+		  LEFT OUTER JOIN REPLIES R
+		  	ON B.ID = R.TOPIC_ID
+		  LEFT OUTER JOIN MEMBERS RM
+		  	ON R.EMAIL = RM.EMAIL
+		  LEFT OUTER JOIN ATTACHED_FILES AF
+		  	 ON B.ID = AF.TOPIC_ID	
+		 WHERE B.ID = #{_parameter}
+		 START WITH R.PRNT_REPLY_ID = 0
+		 	OR R.PRNT_REPLY_ID IS NULL
+	   CONNECT BY PRIOR R.REPLY_ID = R.PRNT_REPLY_ID
+	</select>
+	
+	<update id="updateBoard"
+			parameterType="com.hello.board.vo.BoardVO">
+		UPDATE BOARD.BOARD
+		   SET SUBJECT=#{subject}
+		   	 , CONTENT=#{content}
+		   	 , EMAIL=#{email}
+		   	 , MDFY_DT=SYSDATE
+		 WHERE ID=#{id}
+	</update>
+	
+	<delete id="deleteBoard"
+			parameterType="_int">
+		DELETE 
+		  FROM BOARD.BOARD
+		 WHERE ID=#{_parameter}
+	</delete>
+	
+</mapper>

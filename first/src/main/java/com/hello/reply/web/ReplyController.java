@@ -5,7 +5,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
+import com.hello.member.vo.MemberVO;
 import com.hello.reply.service.ReplyService;
 import com.hello.reply.vo.ReplyVO;
 
@@ -25,7 +27,8 @@ public class ReplyController {
 	}
 	
 	@PostMapping("/board/reply/create")
-	public String doCreateReply(ReplyVO replyVO) {
+	public String doCreateReply(ReplyVO replyVO, @SessionAttribute("__USER_SESSION_DATA__") MemberVO memberVO) {
+		replyVO.setEmail(memberVO.getEmail());
 		boolean createResult = replyService.createNewReply(replyVO);
 		if(createResult) {
 			return "redirect:/board/"+replyVO.getBoardId();

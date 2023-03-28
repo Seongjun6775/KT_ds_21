@@ -25,13 +25,13 @@
 	<div>${board.content}</div>
 	<hr />
 	<form action="${pageContext.request.contextPath}/board/reply/create" method="post">
-		<input type="text" name="boardId" value="${board.id}" /> 
-		<input type="text" name="prntReplyId" />
+		<input type="hidden" name="boardId" value="${board.id}" /> 
+		<input type="hidden" name="prntReplyId" value="0"/>
 
-		<div>
+<!-- 		<div>
 			<label for="email">작성자 이메일</label> <input type="email" name="email"
 				id="email" />
-		</div>
+		</div> -->
 		<div>
 			<label for="reply">댓글 내용</label>
 			<textarea name="reply" id="reply"></textarea>

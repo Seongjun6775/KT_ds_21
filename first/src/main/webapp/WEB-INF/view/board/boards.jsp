@@ -13,6 +13,8 @@
 </script>
 </head>
 <body>
+	<a href="${pageContext.request.contextPath}/member/logout">로그아웃</a>
+
 	<img src="${pageContext.request.contextPath}/img/spring-jeans.png" style="width: 300px; height: 300px;">	
 
 	<h1>글 목록</h1>

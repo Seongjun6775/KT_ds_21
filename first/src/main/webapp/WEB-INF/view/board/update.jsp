@@ -17,10 +17,10 @@
 	        <label for="subject">제목</label>
 	        <input type="text" name="subject" id="subject" placeholder="제목입력" value="${board.subject}"/>
 	    </div>
-	    <div>
+<%-- 	    <div>
 	        <label for="email">이메일</label>
 	        <input type="email" name="email" id="email" placeholder="이메일입력" value="${board.email}"/>
-	    </div>
+	    </div> --%>
 	    <div>
 	        <label for="content">내용</label>
 	        <textarea name="content" id="content" placeholder="내용">${board.content}</textarea>

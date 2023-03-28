@@ -24,6 +24,11 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
+	public int readOneMemberByEmailId(String email) {
+		return memberDAO.readOneMemberByEmailId(email);
+	}
+	
+	@Override
 	public MemberVO readOneMemberByEmailAndPassword(MemberVO memberVO) {
 		return memberDAO.readOneMemberByEmailAndPassword(memberVO);
 	}

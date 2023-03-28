@@ -9,9 +9,54 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.6.4.min.js"></script>
 <script type="text/javascript">
 	$().ready(function(){
+		
+		$("#email").keyup(function(){
+			var emailValue = $(this).val();
+			emailValue = $.trim(emailValue);
+			console.log(emailValue);
+			
+			if(emailValue == ""){
+				$("#dup_email").hide();
+				return
+			}
+			var url = "${pageContext.request.contextPath}/api/member/check/"+emailValue+"/";
+			$.get(url, function(response){
+				console.log(response);
+				if(response.email_count > 0){
+					$("#dup_email").show();
+				}
+				else{
+					$("#dup_email").hide();
+				}
+			})
+			
+		})
+		
+		
+		
 		$("#submit_btn").click(function(event){
 			event.preventDefault();
-			if($.trim($("#email").val()) == ""){
+			
+			var dupEmail = $("#dup_email");
+			var dupStatus = dupEmail.css("display");
+			
+			if(dupStatus == "inline"){
+				alert("이미 사용중인 이메일 입니다.");
+			}
+			else if(dupStatus == "none"){
+				 var url ="${pageContext.request.contextPath}/api/member/regist";
+				 $.post(url, $("#regist_form").serialize(), function(response){
+					 console.log(response);
+					 if(response.registResult){
+						 location.href="${pageContext.request.contextPath}/member/login"
+					 }else if(response.status == "fail"){
+						 alert(response.message);
+					 }else{
+						 alert("시스템 오류입니다. 관리자에게 문의");
+					 }
+				 })
+			}
+			/* if($.trim($("#email").val()) == ""){
 				alert("이메일을 입력하세요")
 				$("#email").focus();
 				return;
@@ -39,7 +84,7 @@
 			$("#regist_form").attr({
 				"action": "${pageContext.request.contextPath}/member/regist",
 				"method": "post"
-			}).submit();
+			}).submit(); */
 		})
 	})
 </script>
@@ -51,6 +96,7 @@
        <div>
            <label for="">이메일</label>
            <input type="email" name="email" id="email" placeholder="이메일입력" maxlength="100"/>
+           <span id="dup_email" style="display: none;">이미 사용중인 이메일</span>
        </div>
        <div>
            <label for="">이름</label>

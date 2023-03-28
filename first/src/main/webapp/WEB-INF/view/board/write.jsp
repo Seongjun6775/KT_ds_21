@@ -23,10 +23,10 @@
 	    	<input type="file" name="uploadFile" placeholder="파일을 선택하세요"/>
 	    	<input type="file" name="uploadFile" placeholder="파일을 선택하세요"/>
 	    </div>
-	    <div>
+<!-- 	    <div>
 	        <label for="email">이메일</label>
 	        <input type="email" name="email" id="email" placeholder="제목입력" />
-	    </div>
+	    </div> -->
 	    <div>
 	        <label for="content">내용</label>
 	        <textarea name="content" id="content" placeholder="내용"></textarea>
